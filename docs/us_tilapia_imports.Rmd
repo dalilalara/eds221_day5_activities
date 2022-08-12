@@ -1,0 +1,93 @@
+---
+title: "Task 5 EDS 221 Day 5 Part 2"
+author: "Dalila Lara"
+date: "2022-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Task 2 Wild Data 
+
+
+```{r}
+#attatch packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(skimr)
+```
+
+```{r}
+#explore data
+#pivot longer by piping in
+tilapia_data <- read_csv(here("data", "us_tilapia_imports.csv")) |>
+  pivot_longer(cols = -country, names_to = "year",
+               values_to = "imports") 
+
+summary(tilapia_data)
+names(tilapia_data)
+#dim(tilapia_data)
+#skim(tilapia_data)
+```
+
+```{r}
+#check class of year column 
+class(tilapia_data$year)
+
+#change from character to numeric
+tilapia_data_numeric <- tilapia_data |>
+  mutate(year = as.numeric(year))
+tilapia_data_numeric
+
+#double check that column of data is now numeric
+class(tilapia_data_numeric$year)
+```
+
+```{r}
+#Use dplyr::group_by() %>% summarize() to find the total US tilapia imports by year, store as yearly_tilapia_tot
+
+tilapia_year <- tilapia_data_numeric |> group_by(year) |> summarize(yearly_tilapia_tot = sum(imports, na.rm = TRUE))
+
+tilapia_year
+```
+
+```{r}
+#Create a ggplot line graph of total US tilapia imports for all years in yearly_tilapia_tot. Update axis labels (include units as necessary), then export your graph as a .png to figs.
+
+tilapia_ggplot <- ggplot(data = tilapia_year, aes(x = year, y = yearly_tilapia_tot)) +
+  geom_line() +
+  labs( title = "Tilapia imports a year",
+        x = "Year",
+        y = "Tilapia population")
+```
+
+```{r}
+#ggsave
+ggsave(here("figs", "tilapia_ggplot.png" ) )
+```
+
+
+```{r}
+#Create a subset that only retains imports from Ecuador, Honduras, Costa Rica, and Mexico (you decide what to name this)
+
+subset_countries <- tilapia_data |>
+  filter(country %in% c("Ecuador", "Hondoras", "Costa Rica", "Mexico"))
+
+```
+
+```{r}
+#Create a ggplot graph of total US tilapia imports over time, for those four countries in the subset you created above, separated by country. Update axis labels, add a title, customize your color scheme, update the theme. Export a .jpg of your graph to figs.
+
+ggplot(data = subset_countries, aes(x = country, y = imports)) +
+  geom_line() +
+  labs( title = "Tilapia imports in Latin America",
+        x = "country",
+        y = "imports")
+
+ggsave(here("figs", "tilapia_latinamerica.png" ) )
+
+```
+

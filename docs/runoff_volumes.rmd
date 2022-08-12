@@ -1,0 +1,59 @@
+---
+title: "Day 5 Activities Task 1"
+author: "Dalila Lara"
+date: "2022-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+# TASK 1
+### source r script of storm_runoff calculations
+```{r}
+source(here("src", "storm_runoff.R"))
+```
+
+
+### predict_runoff function to estimate stormwater volume for a watershed of 182 acres, over a range of estimates for the impervious fraction (from 0.6 to 0.8, by increments of 0.01). Note: you do not need to write a for loop here.
+```{r}
+# watershed 182 acres IA
+product_r_v <- r_v(182)
+
+#imprevious fractions
+range <- seq(from = 0.6, to = 0.8, by = 0.01)
+
+predict_runoff_output <-predict_runoff(product_r_v, range)
+
+```
+
+
+
+###data frame
+```{r}
+storm_water_data <- data.frame(range, predict_runoff_output)
+```
+
+### ggplot graph
+```{r}
+#Create a ggplot graph that has both dots and connecting lines (i.e., you’ll layer geom_point() and geom_line(). Update axis labels. Export a png of your graph to the figs folder using ggsave.
+
+storm_water_ggplot <- ggplot(data = storm_water_data, aes(x = range, y = predict_runoff_output) ) +
+  geom_point() +
+  geom_line() +
+  ggtitle("Storm Water Data")
+```
+
+
+### Save fig 
+```{r}
+ggsave(here("figs", "storm_water_ggplot.png" ) )
+```
+
+
